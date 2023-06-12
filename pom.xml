@@ -4,8 +4,7 @@
   <groupId>com.example</groupId>
   <artifactId>calculator</artifactId>
   <packaging>war</packaging>
-  <version>1.0</version>
-  <name>Calculator Program for intellipaat DevOps Nov Program </name>
+  <version>1.0</version><name>Calculator Program for Intellipaat DevOps Nov Program </name>
 
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
