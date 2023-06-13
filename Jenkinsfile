@@ -1,5 +1,10 @@
 pipeline {
-  agent any
+  agent {
+     docker {
+        image 'maven:3.9.0-eclipse-temurin-11'
+        args '-v $HOME/.m2'
+            }
+        }
   stages {
     stage('Compile') {
       steps{
