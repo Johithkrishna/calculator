@@ -1,7 +1,7 @@
 pipeline {
   agent {
      docker {
-        image 'maven:3.9.0-eclipse-temurin-11'
+          image 'node:18.16.0-alpine'
             }
         }
   stages {
