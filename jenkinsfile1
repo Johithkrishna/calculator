@@ -23,6 +23,13 @@ pipeline {
             }
         }
 
+        stage('Package') {
+            steps {
+                // generate war file
+                sh 'mvn package'
+            }
+        }
+
         stage('SonarQube Analysis') {
             steps {
                 script {
