@@ -5,7 +5,7 @@ pipeline {
         // Define your Artifactory and SonarQube server configurations
         ARTIFACTORY_SERVER = credentials('artifactory-server')
         SONARQUBE_SERVER = credentials('sonarqube-server')
-        
+
     stages {
         stage('Checkout') {
             steps {
@@ -53,7 +53,7 @@ pipeline {
                     def rtServer = Artifactory.server(ARTIFACTORY_SERVER)
 
                     // Run your build commands (replace with actual build command)
-                    sh 'mvn clean install'
+                    // sh 'mvn clean install'
 
                     // Publish artifacts to Artifactory
                     def buildInfo = rtServer.publishBuildInfo()
