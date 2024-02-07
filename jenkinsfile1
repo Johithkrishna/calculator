@@ -5,7 +5,7 @@ pipeline {
         // Define your Artifactory and SonarQube server configurations
         ARTIFACTORY_SERVER = credentials('artifactory-server')
         SONARQUBE_SERVER = credentials('sonarqube-server')
-
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -45,7 +45,7 @@ pipeline {
                 }
             }
         }
-  
+    }
     post {
         success {
             echo 'Build and SonarQube analysis successful!'
@@ -53,7 +53,5 @@ pipeline {
         failure {
             echo 'Build or SonarQube analysis failed!'
         }
-    }
-    }
-    }
+    }    
 }
