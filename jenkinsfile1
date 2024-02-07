@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        // Define your Artifactory and SonarQube server configurations
+        ARTIFACTORY_SERVER = credentials('artifactory-server')
+        SONARQUBE_SERVER = credentials('sonarqube-server')
+        
     stages {
         stage('Checkout') {
             steps {
@@ -40,8 +45,34 @@ pipeline {
                 }
             }
         }
-    }
+  
+        stage('Moving artifacts'){
+            steps {
+                script {
+                    // Set up the Artifactory server
+                    def rtServer = Artifactory.server(ARTIFACTORY_SERVER)
 
+                    // Run your build commands (replace with actual build command)
+                    sh 'mvn clean install'
+
+                    // Publish artifacts to Artifactory
+                    def buildInfo = rtServer.publishBuildInfo()
+
+                    // Store build information for later reference
+                    rtServer.captureBuildInfo()
+
+                    // Archive the build artifacts to keep them for the next stages
+                    archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+
+                    // Deploy artifacts to Artifactory
+                    rtServer.deployer.deploy(
+                        target: rtServer.publisher.getArtifactDeployPath(buildInfo),
+                        deployPattern: 'target/*.jar',
+                        failNoFilesDeploy: true
+                    )
+                }
+            }
+        }
     post {
         success {
             echo 'Build and SonarQube analysis successful!'
