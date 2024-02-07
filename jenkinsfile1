@@ -54,3 +54,6 @@ pipeline {
             echo 'Build or SonarQube analysis failed!'
         }
     }
+    }
+    }
+}
