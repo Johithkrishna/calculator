@@ -1,11 +1,11 @@
 pipeline {
     agent any
 
-    environment {
+    //environment {
         // Define your Artifactory and SonarQube server configurations
-        ARTIFACTORY_SERVER = credentials('artifactory-server')
-        SONARQUBE_SERVER = credentials('sonarqube-server')
-    }
+        // ARTIFACTORY_SERVER = credentials('artifactory-server')
+       // SONARQUBE_SERVER = credentials('sonarqube-server')
+    //}
     stages {
         stage('Checkout') {
             steps {
