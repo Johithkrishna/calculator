@@ -45,8 +45,7 @@ pipeline {
                 }
             }
          }
-    }
-}    
+    }   
     post {
         success {
             echo 'Build and SonarQube analysis successful!'
@@ -55,3 +54,4 @@ pipeline {
             echo 'Build or SonarQube analysis failed!'
         }
     }    
+}
