@@ -44,8 +44,9 @@ pipeline {
                     }
                 }
             }
-       // }
+       //  }
     }
+}    
     post {
         success {
             echo 'Build and SonarQube analysis successful!'
