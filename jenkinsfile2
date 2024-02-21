@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+
+    //environment {
+        // Define your Artifactory and SonarQube server configurations
+        // ARTIFACTORY_SERVER = credentials('artifactory-server')
+       // SONARQUBE_SERVER = credentials('sonarqube-server')
+    //}
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the source code from your version control system
+                git 'https://github.com/Johithkrishna/calculator.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Run your build commands
+                sh 'mvn compile'
+            }
+        }
+
+        stage('Unit Test') {
+            steps {
+                // Run your unit tests
+                sh 'mvn test'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                // generate war file
+                sh 'mvn package'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // Run SonarQube analysis
+                    withSonarQubeEnv('SonarQube') {
+                        sh 'mvn sonar:sonar'
+                    }
+                }
+            }
+         }
+    }   
+    post {
+        success {
+            echo 'Build and SonarQube analysis successful!'
+        }
+        failure {
+            echo 'Build or SonarQube analysis failed!'
+        }
+    }    
+}
