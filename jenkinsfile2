@@ -1,0 +1,94 @@
+pipeline {
+    agent any
+
+    environment {
+        // Define your Artifactory and SonarQube server configurations
+        // ARTIFACTORY_SERVER = credentials('artifactory-server')
+       // SONARQUBE_SERVER = credentials('sonarqube-server')
+        AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+        AWS_REGION            = 'your-aws-region'
+        ECR_REPOSITORY        = 'your-ecr-repository'
+        DOCKER_IMAGE_NAME     = 'your-docker-image-name'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the source code from your version control system
+                git 'https://github.com/Johithkrishna/calculator.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Run your build commands
+                sh 'mvn compile'
+            }
+        }
+
+        stage('Unit Test') {
+            steps {
+                // Run your unit tests
+                sh 'mvn test'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                // generate war file
+                sh 'mvn package'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // Run SonarQube analysis
+                    withSonarQubeEnv('SonarQube') {
+                        sh 'mvn sonar:sonar'
+                    }
+                }
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build Docker image
+                    sh "docker build -t ${DOCKER_IMAGE_NAME} ."
+                }
+            }
+        } 
+
+        stage('Push to ECR') {
+            steps {
+                script {
+                    // Configure AWS CLI
+                    withAWS(credentials: 'aws-credentials') {
+                        sh "aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}"
+                        sh "aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}"
+                        sh "aws configure set region ${AWS_REGION}"
+
+                        // Get ECR login command and execute it
+                        def ecrLoginCmd = sh(script: "aws ecr get-login --no-include-email --region ${AWS_REGION}", returnStdout: true).trim()
+                        sh "${ecrLoginCmd}"
+
+                        // Tag the Docker image for ECR
+                        sh "docker tag ${DOCKER_IMAGE_NAME}:latest ${ECR_REPOSITORY}/${DOCKER_IMAGE_NAME}:latest"
+
+                        // Push Docker image to ECR
+                        sh "docker push ${ECR_REPOSITORY}/${DOCKER_IMAGE_NAME}:latest"
+                    }
+                }
+            }
+        }
+    }   
+    post {
+        success {
+            echo 'Build and SonarQube analysis successful!'
+        }
+        failure {
+            echo 'Build or SonarQube analysis failed!'
+        }
+    }    
+}
