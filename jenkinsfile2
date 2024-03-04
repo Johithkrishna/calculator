@@ -5,11 +5,11 @@ pipeline {
         // Define your Artifactory and SonarQube server configurations
         // ARTIFACTORY_SERVER = credentials('artifactory-server')
        // SONARQUBE_SERVER = credentials('sonarqube-server')
-        AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-        AWS_REGION            = 'us-east-1'
-        ECR_REPOSITORY        = 'practise_123'
-        DOCKER_IMAGE_NAME     = 'testing'
+        AWS_ACCOUNT_ID="409443329347"
+        AWS_DEFAULT_REGION="us-east-1"
+        IMAGE_REPO_NAME="practise_123"
+        IMAGE_TAG="v1"
+        REPOSITORY_URI = "409443329347.dkr.ecr.us-east-1.amazonaws.com/practise_123"
     }
     stages {
         stage('Checkout') {
@@ -51,6 +51,14 @@ pipeline {
             //}
         // }
         
+        stage('Logging into AWS ECR') {
+            steps {
+                script {
+                sh """aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"""
+                } 
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -60,27 +68,13 @@ pipeline {
             }
         } 
 
-        stage('Push to ECR') {
-            steps {
-                script {
-                    // Configure AWS CLI
-                    withAWS(credentials: 'aws-credentials') {
-                        sh "aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}"
-                        sh "aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}"
-                        sh "aws configure set region ${AWS_REGION}"
-
-                        // Get ECR login command and execute it
-                        def ecrLoginCmd = sh(script: "aws ecr get-login --no-include-email --region ${AWS_REGION}", returnStdout: true).trim()
-                        sh "${ecrLoginCmd}"
-
-                        // Tag the Docker image for ECR
-                        sh "docker tag ${DOCKER_IMAGE_NAME}:latest ${ECR_REPOSITORY}/${DOCKER_IMAGE_NAME}:latest"
-
-                        // Push Docker image to ECR
-                        sh "docker push ${ECR_REPOSITORY}/${DOCKER_IMAGE_NAME}:latest"
-                    }
-                }
-            }
+        stage('Pushing to ECR') {
+            steps {  
+               script {
+                sh """docker tag ${IMAGE_REPO_NAME}:${IMAGE_TAG} ${REPOSITORY_URI}:$IMAGE_TAG"""
+                sh """docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"""
+             }
+          }
         }
     }   
     post {
