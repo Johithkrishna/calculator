@@ -3,16 +3,16 @@ pipeline {
 
     environment {
         // Define your AWS credentials (Access Key ID and Secret Access Key)
-        AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-        AWS_REGION            = 'us-east-1'
-        ECR_REPOSITORY        = 'practise_123'
-        EKS_CLUSTER_NAME      = 'your-eks-cluster-name'
-        KUBECONFIG_PATH       = '/path/to/kubeconfig'
-        DOCKER_IMAGE_NAME     = 'your-docker-image-name'
-        K8S_DEPLOYMENT_NAME   = 'your-deployment-name'
-        K8S_SERVICE_NAME      = 'your-service-name'
-        K8S_SERVICE_PORT      = 'your-service-port'
+       // AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
+       // AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+       // AWS_REGION            = 'us-east-1'
+       // ECR_REPOSITORY        = 'practise_123'
+       // EKS_CLUSTER_NAME      = 'your-eks-cluster-name'
+       // KUBECONFIG_PATH       = '/path/to/kubeconfig'
+       // DOCKER_IMAGE_NAME     = 'your-docker-image-name'
+       // K8S_DEPLOYMENT_NAME   = 'your-deployment-name'
+       // K8S_SERVICE_NAME      = 'your-service-name'
+       // K8S_SERVICE_PORT      = 'your-service-port'
         DESTINATION_SERVER_IP = '3.89.238.126'
     }
 
