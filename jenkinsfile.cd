@@ -13,14 +13,14 @@ pipeline {
         K8S_DEPLOYMENT_NAME   = 'your-deployment-name'
         K8S_SERVICE_NAME      = 'your-service-name'
         K8S_SERVICE_PORT      = 'your-service-port'
-        Destination_Server_IP = ''
+        DESTINATION_SERVER_IP = '3.89.238.126'
     }
 
     stages {
         stage('SSH to App sever') {
             steps {
                 script {
-                    sh "ssh root@ ${Destination_Server_IP}"
+                    sh "ssh root@ ${DESTINATION_SERVER_IP}"
                 }
             }
         }
