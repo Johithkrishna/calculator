@@ -13,7 +13,7 @@ pipeline {
        // K8S_DEPLOYMENT_NAME   = 'your-deployment-name'
        // K8S_SERVICE_NAME      = 'your-service-name'
        // K8S_SERVICE_PORT      = 'your-service-port'
-        DESTINATION_SERVER_IP = '3.89.238.126'
+        DESTINATION_SERVER_IP = '18.206.38.97'
     }
 
     stages {
