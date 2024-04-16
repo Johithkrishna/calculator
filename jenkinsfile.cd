@@ -20,7 +20,7 @@ pipeline {
         stage('SSH to App sever') {
             steps {
                 script {
-                    sh "ssh root@ ${DESTINATION_SERVER_IP}"
+                    sh "sudo ssh root@ ${DESTINATION_SERVER_IP}"
                 }
             }
         }
