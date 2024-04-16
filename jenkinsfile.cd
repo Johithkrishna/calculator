@@ -25,7 +25,7 @@ pipeline {
             }
         }
 
-        stage('Pull Image from ECR') {
+       /* stage('Pull Image from ECR') {
             steps {
                 script {
                     // Configure AWS CLI
@@ -57,7 +57,7 @@ pipeline {
                     sh "kubectl apply -f your-kubernetes-service.yaml"
                 }
             }
-        }
+        } */
     }
 
     post {
