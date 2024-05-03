@@ -1,47 +1,88 @@
 pipeline {
     agent any
+
     environment {
+        // Define your Artifactory and SonarQube server configurations
+        // ARTIFACTORY_SERVER = credentials('artifactory-server')
+       // SONARQUBE_SERVER = credentials('sonarqube-server')
         AWS_ACCOUNT_ID="409443329347"
         AWS_DEFAULT_REGION="us-east-1"
         IMAGE_REPO_NAME="practise_123"
         IMAGE_TAG="v1"
         REPOSITORY_URI = "409443329347.dkr.ecr.us-east-1.amazonaws.com/practise_123"
     }
-   
     stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the source code from your version control system
+                git 'https://github.com/Johithkrishna/calculator.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Run your build commands
+                sh 'mvn compile'
+            }
+        }
+
+        stage('Unit Test') {
+            steps {
+                // Run your unit tests
+                sh 'mvn test'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                // generate war file
+                sh 'mvn package'
+            }
+        }
+
+        // stage('SonarQube Analysis') {
+           // steps {
+             //   script {
+                    // Run SonarQube analysis
+               //     withSonarQubeEnv('SonarQube') {
+                 //       sh 'mvn sonar:sonar'
+                 //   }
+             //   }
+            //}
+        // }
         
-         stage('Logging into AWS ECR') {
+        stage('Logging into AWS ECR') {
             steps {
                 script {
                 sh """aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"""
-                }
-                 
+                } 
             }
         }
-        
-        stage('Cloning Git') {
+
+        stage('Build Docker Image') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/Johithkrishna/calculator.git']]])     
+                script {
+                    // Build Docker image
+                    sh " docker build -t ${DOCKER_IMAGE_NAME} ."
+                }
             }
-        }
-  
-    // Building Docker images
-    stage('Building image') {
-      steps{
-        script {
-          dockerImage = docker.build "${IMAGE_REPO_NAME}:${IMAGE_TAG}"
-        }
-      }
-    }
-   
-    // Uploading Docker images into AWS ECR
-    stage('Pushing to ECR') {
-     steps{  
-         script {
+        } 
+
+        stage('Pushing to ECR') {
+            steps {  
+               script {
                 sh """docker tag ${IMAGE_REPO_NAME}:${IMAGE_TAG} ${REPOSITORY_URI}:$IMAGE_TAG"""
                 sh """docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"""
-         }
+             }
+          }
         }
-      }
-    }
+    }   
+    post {
+        success {
+            echo 'Build and SonarQube analysis successful!'
+        }
+        failure {
+            echo 'Build or SonarQube analysis failed!'
+        }
+    }    
 }
