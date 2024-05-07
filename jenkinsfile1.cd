@@ -7,17 +7,17 @@ pipeline {
        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
        AWS_REGION            = 'us-east-1'
        ECR_REPOSITORY        = 'practise_123'
-       EKS_CLUSTER_NAME      = 'my-cluster'
-       KUBECONFIG_PATH       = '$HOME/. kube/config'
-       DOCKER_IMAGE_NAME     = ''
-       K8S_DEPLOYMENT_NAME   = 'deployment'
-       K8S_SERVICE_NAME      = 'service'
-       K8S_SERVICE_PORT      = '80'
-      // DESTINATION_SERVER_IP = '18.206.38.97'
+       EKS_CLUSTER_NAME      = 'your-eks-cluster-name'
+       KUBECONFIG_PATH       = '/path/to/kubeconfig'
+       DOCKER_IMAGE_NAME     = 'your-docker-image-name'
+       K8S_DEPLOYMENT_NAME   = 'your-deployment-name'
+       K8S_SERVICE_NAME      = 'your-service-name'
+       K8S_SERVICE_PORT      = 'your-service-port'
+      //DESTINATION_SERVER_IP = '18.206.38.97'
     }
 
     stages {
-        /*stage('SSH to App sever') {
+       /* stage('SSH to App sever') {
             steps {
                 script {
                     sh "ssh root@${DESTINATION_SERVER_IP}"
@@ -32,6 +32,7 @@ pipeline {
                     withAWS(credentials: 'aws-credentials') {
                         sh "aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}"
                         sh "aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}"
+                        
                         sh "aws configure set region ${AWS_REGION}"
                     
                         // Authenticate Docker with ECR
