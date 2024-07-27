@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    parameters {
+        string(name: 'IMAGE_NAME', defaultValue: 'my-app:latest', description: 'The name of the Docker image to use')
+    }
+
     environment {
         // Define your Artifactory and SonarQube server configurations
         // ARTIFACTORY_SERVER = credentials('artifactory-server')
@@ -8,10 +12,10 @@ pipeline {
         AWS_ACCOUNT_ID="409443329347"
         AWS_DEFAULT_REGION="us-east-1"
         IMAGE_REPO_NAME="practise_123"
-        IMAGE_TAG="v1"
-        IMAGE_NAME="dockertest"
+        IMAGE_TAG="1.0.${BUILD_NUMBER}"
         REPOSITORY_URI = "409443329347.dkr.ecr.us-east-1.amazonaws.com/practise_123"
     }
+
     stages {
         stage('Checkout') {
             steps {
