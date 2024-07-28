@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    
+    parameters {
+        string(name: 'DOCKER_IMAGE_NAME', defaultValue: 'my-app', description: 'Docker image name')
+    }
 
     environment {
         // Define your Artifactory and SonarQube server configurations
@@ -8,8 +12,8 @@ pipeline {
         AWS_ACCOUNT_ID="409443329347"
         AWS_DEFAULT_REGION="us-east-1"
         IMAGE_REPO_NAME="practise_123"
-        IMAGE_TAG="v1"
         REPOSITORY_URI = "409443329347.dkr.ecr.us-east-1.amazonaws.com/practise_123"
+        IMAGE_TAG = "${params.DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
     }
     stages {
         stage('Checkout') {
@@ -25,6 +29,17 @@ pipeline {
                 sh 'mvn compile'
             }
         }
+        
+        /*stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // Run SonarQube analysis
+                    withSonarQubeEnv('SonarQube') {
+                        sh 'mvn sonar:sonar'
+                    }
+                }
+            }
+         }*/
 
         stage('Unit Test') {
             steps {
@@ -40,24 +55,13 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    // Run SonarQube analysis
-                    withSonarQubeEnv('SonarQube') {
-                        sh 'mvn sonar:sonar'
-                    }
-                }
-            }
-         }
-
-       stage('Logging into AWS ECR') {
+        stage('Logging into AWS ECR') {
             steps {
                 script {
                 sh """aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"""
                 } 
             }
-        }
+        } 
 
        stage('Building image') {
             steps {
@@ -74,7 +78,7 @@ pipeline {
                 sh """docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"""
              }
           }
-        }
+        } 
     }   
     post {
         success {
